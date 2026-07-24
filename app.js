@@ -89,5 +89,48 @@ function CoinCard({ coin, onSelect }) {
   );
 }
 
+function App() {
+  const { coins, loading, error, lastUpdated, refetch } = useCoinMarkets(REFRESH_INTERVAL_MS);
+  const [query, setQuery] = useState("");
+
+  const filteredCoins = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) return coins;
+    return coins.filter((coin) =>
+      coin.name.toLowerCase().includes(normalizedQuery) ||
+      coin.symbol.toLowerCase().includes(normalizedQuery)
+    );
+  }, [coins, query]);
+
+  return h(
+    "main",
+    { className: "container py-4" },
+    h(
+      "div",
+      { className: "d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3" },
+      h("h1", { className: "h3 m-0" }, "Crypto Price Tracker"),
+      h(
+        "div",
+        { className: "d-flex align-items-center gap-2" },
+        h(
+          "span",
+          { className: "badge refresh-badge" },
+          lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString()}` : "Loading..."
+        ),
+        h("button", { className: "btn btn-sm btn-primary", onClick: refetch }, "Refresh")
+      )
+    ),
+    h(SearchBar, { query, setQuery }),
+    error && h("div", { className: "alert alert-danger" }, error),
+    loading && !coins.length && h("div", { className: "alert alert-dark" }, "Loading market data..."),
+    !loading && !filteredCoins.length && h("div", { className: "alert alert-dark" }, "No coins match your search."),
+    h(
+      "div",
+      { className: "row" },
+      filteredCoins.map((coin) => h(CoinCard, { key: coin.id, coin, onSelect: () => {} }))
+    )
+  );
+}
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(h(App));
