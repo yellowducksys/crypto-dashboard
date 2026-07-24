@@ -1,0 +1,147 @@
+:root {
+--bg: #ffffff;
+--surface: #fafafa;
+--border: #e2e2e2;
+--text: #1a1a1a;
+--text-muted: #6b6b6b;
+--up: #2e7d32;
+--down: #b3261e;
+}
+
+body {
+background: var(--bg);
+color: var(--text);
+font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.navbar {
+background: var(--surface) !important;
+border-bottom: 1px solid var(--border);
+}
+
+.navbar-brand {
+color: var(--text) !important;
+}
+
+.coin-card {
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 4px;
+cursor: pointer;
+}
+
+.price-up {
+color: var(--up);
+font-weight: 600;
+}
+
+.price-down {
+color: var(--down);
+font-weight: 600;
+}
+
+.coin-icon {
+width: 32px;
+height: 32px;
+}
+
+.modal-content {
+background: var(--surface);
+color: var(--text);
+border: 1px solid var(--border);
+}
+
+.modal-header,
+.modal-body {
+border-color: var(--border) !important;
+}
+
+.search-box {
+max-width: 420px;
+}
+
+.refresh-badge {
+font-size: .75rem;
+background: var(--border) !important;
+color: var(--text-muted) !important;
+}
+
+.text-secondary {
+color: var(--text-muted) !important;
+}
+
+.form-control.bg-dark,
+.input-group-text.bg-dark {
+background: var(--bg) !important;
+color: var(--text) !important;
+border-color: var(--border) !important;
+}
+
+.btn-primary {
+background: var(--text) !important;
+border-color: var(--text) !important;
+color: var(--bg) !important;
+}
+
+.btn-outline-secondary {
+color: var(--text-muted) !important;
+border-color: var(--border) !important;
+}
+
+.btn-outline-secondary:hover {
+background: var(--border) !important;
+color: var(--text) !important;
+}
+
+.btn-outline-light {
+color: var(--text) !important;
+border-color: var(--border) !important;
+}
+
+.alert-dark {
+background: var(--surface) !important;
+color: var(--text) !important;
+border-color: var(--border) !important;
+}
+
+.alert-danger {
+background: var(--surface) !important;
+color: var(--down) !important;
+border: 1px solid var(--border) !important;
+}
+
+/* Portfolio calculator */
+.portfolio-section {
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 4px;
+}
+
+.portfolio-table th,
+.portfolio-table td {
+vertical-align: middle;
+}
+
+.portfolio-total-row {
+border-top: 2px solid var(--text);
+font-weight: 600;
+}
+
+.remove-btn {
+color: var(--down);
+border: 1px solid var(--border);
+background: transparent;
+}
+
+.remove-btn:hover {
+background: var(--border);
+}
+
+::-webkit-scrollbar {
+width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+background: var(--border);
+border-radius: 4px;
+}
