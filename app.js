@@ -1,3 +1,12 @@
+if (!window.React || !window.ReactDOM) {
+  const rootElement = document.getElementById("root");
+  if (rootElement) {
+    rootElement.innerHTML =
+      '<div style="max-width:720px;margin:48px auto;padding:16px;border:1px solid #e2e2e2;border-radius:6px;font-family:Segoe UI,Arial,sans-serif;">Unable to load app dependencies. Please check your network or deployment CSP settings and reload.</div>';
+  }
+  throw new Error("React dependencies failed to load.");
+}
+
 const { useState, useEffect, useCallback, useRef, useMemo } = React;
 const h = React.createElement;
 
