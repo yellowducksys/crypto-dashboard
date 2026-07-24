@@ -1,8 +1,10 @@
 const { useState, useEffect, useCallback, useRef, useMemo } = React;
-const API_BASE = "https://api.coingecko.com/api/v3";
-const REFRESH_INTERVAL_MS = 60000; // 60s auto-refresh
+const h = React.createElement;
 
-/* ---------- Utility formatting functions ---------- */
+const API_BASE = "https://api.coingecko.com/api/v3";
+const REFRESH_INTERVAL_MS = 60000;
+const PORTFOLIO_STORAGE_KEY = "crypto_tracker_portfolio";
+
 const formatCurrency = (num) => {
   if (num === null || num === undefined) return "N/A";
   return "$" + num.toLocaleString(undefined, { maximumFractionDigits: num < 1 ? 6 : 2 });
@@ -13,7 +15,6 @@ const formatCompact = (num) => {
   return new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 2 }).format(num);
 };
 
-/* ---------- Custom Hook: fetch + auto-refresh coin list ---------- */
 function useCoinMarkets(refreshMs) {
   const [coins, setCoins] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -46,3 +47,47 @@ function useCoinMarkets(refreshMs) {
 
   return { coins, loading, error, lastUpdated, refetch: fetchCoins };
 }
+
+function SearchBar({ query, setQuery }) {
+  return h(
+    "div",
+    { className: "input-group search-box mx-auto mb-4" },
+    h("span", { className: "input-group-text bg-dark text-light border-secondary" }, "Search"),
+    h("input", {
+      type: "text",
+      className: "form-control bg-dark text-light border-secondary",
+      placeholder: "Search coin by name or symbol...",
+      value: query,
+      onChange: (e) => setQuery(e.target.value),
+    })
+  );
+}
+
+function CoinCard({ coin, onSelect }) {
+  const changeClass = coin.price_change_percentage_24h >= 0 ? "price-up" : "price-down";
+  const arrow = coin.price_change_percentage_24h >= 0 ? "▲" : "▼";
+  return h(
+    "div",
+    { className: "col-sm-6 col-md-4 col-lg-3 mb-4" },
+    h(
+      "div",
+      { className: "coin-card p-3 h-100", onClick: () => onSelect(coin) },
+      h(
+        "div",
+        { className: "d-flex align-items-center mb-2" },
+        h("img", { src: coin.image, alt: coin.name, className: "coin-icon me-2" }),
+        h("div", null,
+          h("div", { className: "fw-bold" }, coin.name),
+          h("div", { className: "text-secondary small text-uppercase" }, coin.symbol)
+        )
+      ),
+      h("div", { className: "fs-5 fw-semibold mb-1" }, formatCurrency(coin.current_price)),
+      h("div", { className: changeClass + " small mb-2" }, `${arrow} ${Math.abs(coin.price_change_percentage_24h || 0).toFixed(2)}% (24h)`),
+      h("div", { className: "small text-secondary" }, `Market Cap: ${formatCompact(coin.market_cap)}`),
+      h("div", { className: "small text-secondary" }, `Volume: ${formatCompact(coin.total_volume)}`)
+    )
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(h(App));
