@@ -13,11 +13,11 @@ const root = document.getElementById("root");
 
 const escapeHtml = (value) =>
   String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 
 const formatCurrency = (num) => {
   if (num === null || num === undefined) return "N/A";
@@ -34,8 +34,8 @@ const getFilteredCoins = () => {
   if (!normalizedQuery) return state.coins;
   return state.coins.filter(
     (coin) =>
-      coin.name.toLowerCase().includes(normalizedQuery) ||
-      coin.symbol.toLowerCase().includes(normalizedQuery)
+      String(coin && coin.name ? coin.name : "").toLowerCase().includes(normalizedQuery) ||
+      String(coin && coin.symbol ? coin.symbol : "").toLowerCase().includes(normalizedQuery)
   );
 };
 
@@ -46,25 +46,28 @@ const render = () => {
   const statusText = state.lastUpdated ? `Updated ${state.lastUpdated.toLocaleTimeString()}` : "Loading...";
   const cards = filteredCoins
     .map((coin) => {
-      const isUp = (coin.price_change_percentage_24h || 0) >= 0;
+      const coinName = coin && coin.name ? coin.name : "Unknown";
+      const coinSymbol = coin && coin.symbol ? coin.symbol : "";
+      const coinImage = coin && coin.image ? coin.image : "";
+      const isUp = (coin && coin.price_change_percentage_24h ? coin.price_change_percentage_24h : 0) >= 0;
       const changeClass = isUp ? "price-up" : "price-down";
       const arrow = isUp ? "▲" : "▼";
-      const change = Math.abs(coin.price_change_percentage_24h || 0).toFixed(2);
+      const change = Math.abs(coin && coin.price_change_percentage_24h ? coin.price_change_percentage_24h : 0).toFixed(2);
 
       return `
         <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
           <div class="coin-card p-3 h-100">
             <div class="d-flex align-items-center mb-2">
-              <img src="${escapeHtml(coin.image)}" alt="${escapeHtml(coin.name)}" class="coin-icon me-2" />
+              <img src="${escapeHtml(coinImage)}" alt="${escapeHtml(coinName)}" class="coin-icon me-2" />
               <div>
-                <div class="fw-bold">${escapeHtml(coin.name)}</div>
-                <div class="text-secondary small text-uppercase">${escapeHtml(coin.symbol)}</div>
+                <div class="fw-bold">${escapeHtml(coinName)}</div>
+                <div class="text-secondary small text-uppercase">${escapeHtml(coinSymbol)}</div>
               </div>
             </div>
-            <div class="fs-5 fw-semibold mb-1">${formatCurrency(coin.current_price)}</div>
+            <div class="fs-5 fw-semibold mb-1">${formatCurrency(coin ? coin.current_price : null)}</div>
             <div class="${changeClass} small mb-2">${arrow} ${change}% (24h)</div>
-            <div class="small text-secondary">Market Cap: ${formatCompact(coin.market_cap)}</div>
-            <div class="small text-secondary">Volume: ${formatCompact(coin.total_volume)}</div>
+            <div class="small text-secondary">Market Cap: ${formatCompact(coin ? coin.market_cap : null)}</div>
+            <div class="small text-secondary">Volume: ${formatCompact(coin ? coin.total_volume : null)}</div>
           </div>
         </div>
       `;
@@ -131,7 +134,7 @@ async function fetchCoins() {
     state.lastUpdated = new Date();
   } catch (err) {
     console.error(err);
-    state.error = err?.message || "Failed to fetch cryptocurrency data.";
+    state.error = (err && err.message) || "Failed to fetch cryptocurrency data.";
   } finally {
     state.loading = false;
     render();
